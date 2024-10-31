@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import DEX from '../../../public/DEX.png'
+import Link from 'next/link'
 
 export default function Navbar() {
     return (
@@ -8,7 +9,7 @@ export default function Navbar() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <a href="/" className="flex items-center">
+              <Link href="/" className="flex items-center">
                 <Image 
                   src={DEX} 
                   alt="DEX Logo" 
@@ -17,7 +18,7 @@ export default function Navbar() {
                   className="mr-2"
                 />
                 <span className="text-xl font-bold text-indigo-600">DEX</span>
-              </a>
+              </Link>
             </div>
   
             {/* Connect Wallet Button */}

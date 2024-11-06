@@ -332,6 +332,7 @@ fn remove_liquidity(ctx: &ReceiveContext, host: &mut Host<State>) -> ReceiveResu
             .shares
             .remove(&(params.token_pair.clone(), sender));
     }
+    
 
     // Transfer tokens back to user
     transfer_token(

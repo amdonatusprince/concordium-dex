@@ -1,6 +1,7 @@
 import './globals.css'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import ConnectWalletProvider from "@/provider/ConnectWalletProvider";
 
 export const metadata = {
   title: "Concordium DEX",
@@ -13,11 +14,13 @@ export default function RootLayout({ children }) {
       <body className="bg-gray-50 text-gray-900 min-h-screen"
       suppressHydrationWarning
       >
+        <ConnectWalletProvider>
         <Navbar />
         <main className="max-w-7xl mx-auto px-4 py-6">
           {children}
         </main>
         <Footer />
+        </ConnectWalletProvider>
       </body>
     </html>
   )

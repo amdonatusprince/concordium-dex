@@ -36,6 +36,8 @@ pub struct State {
     shares: BTreeMap<(TokenPair, AccountAddress), TokenAmount>,
 }
 
+
+
 /// Contract errors
 #[derive(Debug, PartialEq, Eq, Reject, Serialize, SchemaType)]
 pub enum CustomError {
@@ -304,6 +306,24 @@ fn remove_liquidity(ctx: &ReceiveContext, host: &mut Host<State>) -> ReceiveResu
         CustomError::InsufficientShares.into()
     );
 
+    // 8d880e189f5248b7ad83d7d2fdc3456461aef23bc4bf6a43af9a096199d0c462
+    // 10313
+
+    concordium-client contract init 8d880e189f5248b7ad83d7d2fdc3456461aef23bc4bf6a43af9a096199d0c462 \
+    --sender bigjoe_wallet.json\
+    --energy 30000 \
+    --contract dex_contract \
+    --grpc-ip grpc.testnet.concordium.com \
+    --grpc-port 20000 \
+    --secure
+
+   
+    concordium-client contract invoke 10312 \
+    --entrypoint getPool \
+    --grpc-ip grpc.testnet.concordium.com \
+    --grpc-port 20000 \
+    --secure
+    
     // Calculate token amounts to return
     let amount0 =
         checked_arithmetic(|| Some((params.shares * pool.token0_reserve) / pool.total_shares))?;
@@ -355,6 +375,8 @@ fn remove_liquidity(ctx: &ReceiveContext, host: &mut Host<State>) -> ReceiveResu
 
     Ok(())
 }
+
+
 
 /// Helper function to calculate swap amount using constant product formula
 fn calculate_amount_out(

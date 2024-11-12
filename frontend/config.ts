@@ -5,12 +5,15 @@ import {
   WalletConnectConnector,
 } from "@concordium/react-components";
 
-export const DEFAULT_CONTRACT_INDEX = BigInt(10315);
+export const DEFAULT_CONTRACT_INDEX = BigInt(10312);
 export const MAX_CONTRACT_EXECUTION_ENERGY = BigInt(30000);
 
-export const CONTRACT_NAME = "simple dex";
+export const CONTRACT_NAME = "dex_contract";
 export const CONTRACT_SUB_INDEX = BigInt(0);
 export const MICRO_CCD = 1000000;
+// export const MODULE_REF = '8d880e189f5248b7ad83d7d2fdc3456461aef23bc4bf6a43af9a096199d0c462';
+
+
 
 
 const WALLET_CONNECT_OPTS = {

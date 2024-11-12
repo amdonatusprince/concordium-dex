@@ -3,6 +3,10 @@ import TokenInput from '../shared/TokenInput'
 import Button from '../shared/Button'
 import { tokens } from '../../constants/tokens'
 import useDummyPrices from '../../hooks/useDummyPrices'
+import { useWallet } from '@/provider/WalletProvider'
+import { useDexProvider } from '@/provider/DexProvider'
+import toast from 'react-hot-toast'
+import { BeatLoader } from 'react-spinners'
 
 export default function AddLiquidity() {
   const [token0Amount, setToken0Amount] = useState('')
@@ -11,6 +15,9 @@ export default function AddLiquidity() {
   const [token1, setToken1] = useState(tokens[1])
   const prices = useDummyPrices()
 
+  const { connection, account, contract, rpc } = useWallet()
+  const { addLiquidity, loadingTransaction } = useDexProvider()
+
   // Simulate price ratio calculation
   useEffect(() => {
     if (token0Amount && token0 && token1) {
@@ -18,6 +25,38 @@ export default function AddLiquidity() {
       setToken1Amount((Number(token0Amount) * rate).toFixed(6))
     }
   }, [token0Amount, token0, token1, prices])
+
+  const handleAddLiquidity = async () => {
+    if (!account) {
+      toast.error('Please connect your wallet')
+      return
+    }
+
+    if (!token0Amount || !token1Amount) {
+      toast.error('Please enter valid amounts')
+      return
+    }
+
+    const params = {
+      tokenPair: {
+        token0_address: token0.address,
+        token1_address: token1.address,
+        token0_id: token0.id,
+        token1_id: token1.id
+      },
+      amount0: token0Amount,
+      amount1: token1Amount,
+      minLiquidity: "0" // You might want to calculate this based on some slippage tolerance
+    }
+
+    try {
+      await addLiquidity(rpc, params, contract)
+      setToken0Amount('')
+      setToken1Amount('')
+    } catch (error) {
+      console.error('Error adding liquidity:', error)
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -33,8 +72,7 @@ export default function AddLiquidity() {
 
       {/* Plus Sign */}
       <div className="flex justify-center">
-        <div className="bg-white border border-gray-200 p-2 rounded-full 
-                      text-gray-600 shadow-sm">
+        <div className="bg-white border border-gray-200 p-2 rounded-full text-gray-600 shadow-sm">
           +
         </div>
       </div>
@@ -59,7 +97,7 @@ export default function AddLiquidity() {
         <div className="grid grid-cols-3 gap-5">
           <div className="group hover:shadow-md transition-all duration-200 text-center bg-white p-4 rounded-xl border border-gray-100">
             <div className="text-lg text-gray-900 font-semibold group-hover:text-indigo-600 transition-colors">
-              {(token0Amount / token1Amount) ? (token0Amount / token1Amount).toFixed(4) : '0.0000'}
+              {(token0Amount && token1Amount) ? (Number(token0Amount) / Number(token1Amount)).toFixed(4) : '0.0000'}
             </div>
             <div className="text-sm text-gray-500 mt-1">
               <span className="font-medium text-gray-600">{token0?.symbol}</span>
@@ -70,7 +108,7 @@ export default function AddLiquidity() {
 
           <div className="group hover:shadow-md transition-all duration-200 text-center bg-white p-4 rounded-xl border border-gray-100">
             <div className="text-lg text-gray-900 font-semibold group-hover:text-indigo-600 transition-colors">
-              {(token1Amount / token0Amount) ? (token1Amount / token0Amount).toFixed(4) : '0.0000'}
+              {(token0Amount && token1Amount) ? (Number(token1Amount) / Number(token0Amount)).toFixed(4) : '0.0000'}
             </div>
             <div className="text-sm text-gray-500 mt-1">
               <span className="font-medium text-gray-600">{token1?.symbol}</span>
@@ -93,10 +131,14 @@ export default function AddLiquidity() {
       {/* Add Liquidity Button */}
       <div className="mt-4">
         <Button
-          onClick={() => console.log('Add liquidity')}
-          disabled={!token0Amount || !token1Amount}
+          onClick={handleAddLiquidity}
+          disabled={!token0Amount || !token1Amount || loadingTransaction}
         >
-          Add Liquidity
+          {loadingTransaction ? (
+            <BeatLoader color="#fff" />
+          ) : (
+            'Add Liquidity'
+          )}
         </Button>
       </div>
     </div>
